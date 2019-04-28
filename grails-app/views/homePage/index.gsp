@@ -8,6 +8,7 @@
 
 
 <%@ page contentType="text/html;charset=UTF-8" %>
+
 <html>
 <head>
     <title>TP Nro. 3 - MELI-dev</title>
@@ -26,7 +27,7 @@
 
 
 <body>
-<h1>Trabajo práctico Nro.3 - IT Academy</h1>
+<h1 align="center">Trabajo práctico Nro.3 - IT Academy</h1>
 <div class="container-fluid">
 
     <form name="formAgencies" id="formAgencies" class="needs-validation" novalidate>
@@ -35,13 +36,11 @@
                 <label for="site">Seleccione un país</label>
                     <g:select optionKey="id" optionValue="name" class="form-control"
                           name="site" id="site" from="${result}"
-                          defaultValue="-1" onChange="getPaymentsMethod(this.value)" noSelection="['null':'Seleccione país']"
+                          defaultValue="-1" onChange="getPaymentsMethod(this.value);getTypeOrders()" noSelection="['null':'Seleccione país']"
                     />
             </div>
             <div class="col-md-4 mb-3 md-form">
                 <label for="payment_methods">Método de pago</label>
-%{--                <input type="text" class="form-control" name="payment_methods" id="payment_methods" placeholder="Método de pago"--}%
-%{--                       required>--}%
                     <select id="payment_methods" name="payment_methods" class="form-control" required>
                             <option value="default">Seleccione un país</option>
                     </select>
@@ -64,7 +63,10 @@
 
             <div class="col-md-4 mb-3 md-form">
                 <label for="sort_by">Orden</label>
-                <input type="text" class="form-control" name="sort_by" id="sort_by" placeholder="Ordenar por:" >
+%{--                <input type="text" class="form-control" name="sort_by" id="sort_by" placeholder="Ordenar por:">--}%
+                    <select id="sort_by" name="sort_by" class="form-control" required>
+                        <option value="">No ordenar</option>
+                    </select>
                 <div class="valid-feedback">
                    Perfecto!
                 </div>
@@ -74,14 +76,14 @@
                 <input type="number" class="form-control" name="limit" id="limit" placeholder="Limitar cantidad"
                 >
             </div>
-
         </div>
-
     </form>
-        <div class="col-md-12 center-block">
+        <div class="col-md-12 center-block" align="center">
             <button class="btn btn-primary btn-sm btn-rounded" type="submit" onclick="getAgencies()">Enviar</button>
+            <button class="btn btn-primary btn-sm btn-rounded" type="submit">Agencias recomendadas</button>
         </div>
 </div>
+<br/>
 <div id="agenciesResult" name="agenciesResult">
     <table class="table" id="tablaAgency">
 
@@ -106,8 +108,24 @@
                 })
             }}
         )
+    }
+    
+    function getTypeOrders() {
 
+        var URL = "http://localhost:4567/typeOrder/"
 
+        $.ajax({
+            url:URL,
+            method: "GET",
+            success: function (response) {
+
+                $('#sort_by').find("option").remove();
+                $('#sort_by').append("<option value=\"\">No ordenar</option>")
+                $.each(response.data, function (index, value) {
+                    $('#sort_by').append("<option value="+ value + ">"+value+"</option>")
+                })
+            }
+        })
     }
 
     function getAgencies() {
@@ -124,7 +142,7 @@
                 $('#tablaAgency').append("<tr><td>Agency code</td><td>Description</td><td>Save</td><td>Delete</td></tr>");
                 $.each(response.data, function (index, value) {
 
-                    $('#tablaAgency').append("<tr><td>" + value.agency_code+"</td><td>"+value.description+"</td><td><button class=\"btn\"><i class=\"glyphicon glyphicon-thumbs-up\"></i></button></td><td><button class=\"btn\"><i class=\"glyphicon glyphicon-thumbs-down\"></i></button></td></tr>");
+                    $('#tablaAgency').append("<tr><td>" + value.agency_code+"</td><td>"+value.description+"</td><td><button class=\"btn\" onclick='console.log(value)'><i class=\"glyphicon glyphicon-thumbs-up\"></i></button></td><td><button class=\"btn\"><i class=\"glyphicon glyphicon-thumbs-down\"></i></button></td></tr>");
              });
         }}
     )
